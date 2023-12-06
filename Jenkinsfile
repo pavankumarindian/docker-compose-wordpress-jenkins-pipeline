@@ -5,6 +5,8 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building Docker image...'
+                sh 'mkdir wordpress'
+                sh 'cd wordpress'
                 sh 'docker-compose build'
             }
         }
