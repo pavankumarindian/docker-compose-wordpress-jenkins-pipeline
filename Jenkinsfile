@@ -2,10 +2,9 @@ pipeline {
     agent any
 
     stages {
-        stage('Build') {
+        stage('Checkout') {
             steps {
-                echo 'Building Docker image...'
-                sh 'docker-compose build'
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[url: 'https://github.com/pavankumarindian/docker-compose-wordpress-jenkins-pipeline.git']]])
             }
         }
 
@@ -13,14 +12,16 @@ pipeline {
             steps {
                 echo 'Deploying WordPress...'
                 sh 'docker-compose up -d'
-
-                echo 'Retrieving WordPress IP address...'
-                sh 'docker-compose exec wordpress bash -c "ip route get 8.8.8.8 | awk \'/src/ {print $1}\'" > wordpress-ip.txt'
-
-                echo 'WordPress IP address:'
-                sh 'cat wordpress-ip.txt'
             }
         }
     }
+
+    post {
+        success {
+            echo 'Pipeline succeeded!'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
+    }
 }
-a
